@@ -37,8 +37,8 @@ app.use(
                 ],
                 "img-src": ["'self'", "data:"],
                 "connect-src": ["'self'", "https://cdnjs.cloudflare.com"]
-            }
-        }
+            },
+        },
         frameguard: false,
     })
 );
