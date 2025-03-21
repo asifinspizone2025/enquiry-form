@@ -22,6 +22,7 @@ app.use(
         contentSecurityPolicy: {
             directives: {
                 "default-src": ["'self'"],
+                frameAncestors: ["*"],
                 "script-src": [
                     "'self'", 
                     (req, res) => `'nonce-${res.locals.nonce}'`,
@@ -34,13 +35,18 @@ app.use(
                     "'unsafe-inline'",
                     "https://cdnjs.cloudflare.com"
                 ],
-                "frame-src": ["'self'", "https://www.google.com"], 
                 "img-src": ["'self'", "data:"],
                 "connect-src": ["'self'", "https://cdnjs.cloudflare.com"]
             }
         }
+        frameguard: false,
     })
 );
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "ALLOWALL"); 
+  res.setHeader("Content-Security-Policy", "frame-ancestors *");
+  next();
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
