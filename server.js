@@ -52,9 +52,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.set('trust proxy', true); // Trusted proxies support
 
+// IP Extraction Function
 function getClientIp(req) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    return ip.includes(':') ? ip.split(':').pop() : ip;
+    const forwardedIps = req.headers['x-forwarded-for'];
+    if (forwardedIps) {
+        return forwardedIps.split(',')[0].trim(); // Client ka real IP
+    }
+    return req.connection.remoteAddress.includes(':')
+        ? req.connection.remoteAddress.split(':').pop()
+        : req.connection.remoteAddress;
 }
 
 const transporter = nodemailer.createTransport({
@@ -105,10 +111,13 @@ app.post('/submit', async (req, res) => {
         return res.status(400).send('All fields are required.');
     }
 
-    const userIp = getClientIp(req);
-    const geo = geoip.lookup(userIp) || { city: 'Unknown', country: 'Unknown' };
-    const location = `${geo.city}, ${geo.country}`;
-    const referenceUrl = req.headers.referer || 'Direct Access';
+        const userIp = getClientIp(req);
+    const geo = geoip.lookup(userIp);
+    const location = geo
+        ? `${geo.city || 'Unknown'}, ${geo.country || 'Unknown'}`
+        : 'Unknown Location';
+
+    const referenceUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
     try {
         const recaptchaResponse = await axios.post(
