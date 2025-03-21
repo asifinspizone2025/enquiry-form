@@ -34,10 +34,13 @@ app.use(
                     "'unsafe-inline'",
                     "https://cdnjs.cloudflare.com"
                 ],
-                "frame-src": ["'self'", "https://inspizone.com/","https://www.google.com"], 
+                "frame-src": ["'self'", "https://inspizone.com/", "https://www.google.com"],
                 "img-src": ["'self'", "data:"],
                 "connect-src": ["'self'", "https://cdnjs.cloudflare.com"]
             }
+        },
+        frameguard: {
+            action: 'SAMEORIGIN'
         }
     })
 );
@@ -52,7 +55,7 @@ function getClientIp(req) {
 }
 
 const transporter = nodemailer.createTransport({
-    host: 'da400.is.cc', // Change this to your SMTP server
+    host: 'da400.is.cc',
     port: 587,
     secure: false,
     auth: {
@@ -63,7 +66,7 @@ const transporter = nodemailer.createTransport({
 
 // Rate Limiting
 const limiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
+    windowMs: 1 * 60 * 1000,
     max: 5,
     message: "Too many requests, please try again later."
 });
@@ -76,7 +79,6 @@ const db = mysql.createConnection({
     password: '6]76>!b/lGw',
     database: 'u212758487_leadsinpizone',
 });
-
 
 db.connect((err) => {
     if (err) {
@@ -112,7 +114,7 @@ app.post('/submit', async (req, res) => {
         if (!recaptchaResponse.data.success) {
             return res.status(403).send('Captcha verification failed!');
         }
-       
+
         const sql = `INSERT INTO leads1 (name, email, mobile, course, message, ip, location, ref_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         db.query(sql, [name, email, mobile, course, message, userIp, location, referenceUrl], (err, result) => {
             if (err) {
