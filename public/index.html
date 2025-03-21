@@ -24,7 +24,6 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             border: 4px solid #007bff;
             border-radius: 20px;
-            padding: 25px;
             width: 100%;
             max-width: 400px;
             box-sizing: border-box;
@@ -69,16 +68,9 @@
     <div class="form-container">
         <h2>Send Enquiry Now</h2>
         <form method="POST" action="/submit">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-
-            <label for="mobile">Mobile:</label>
-            <input type="tel" id="mobile" name="mobile" required>
-
-            <label for="course">Course:</label>
+            <input type="text" id="name" name="name" required placeholder="Name*">
+            <input type="email" id="email" name="email" required placeholder="Emails">
+            <input type="tel" id="mobile" name="mobile" required placeholder="Mobile">
             <select id="course" name="course" required>
                 <option value="">Select Course</option>
                 <option value="Web Development">Web Development</option>
@@ -87,8 +79,7 @@
                 <option value="Graphic Design">Graphic Design</option>
             </select>
 
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" rows="4" required></textarea>
+            <textarea id="message" name="message" rows="4" required placeholder="Write message here..."></textarea>
 
             <div class="g-recaptcha" data-sitekey="6Ld5fOIoAAAAAB2iweCfZmfPB2Q3UuWHDmfT4rni"></div>
 
