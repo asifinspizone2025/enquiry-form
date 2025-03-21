@@ -34,7 +34,7 @@ app.use(
                     "'unsafe-inline'",
                     "https://cdnjs.cloudflare.com"
                 ],
-                "frame-src": ["'self'", "https://inspizone.com/"], 
+                "frame-src": ["'self'", "https://inspizone.com/","https://www.google.com"], 
                 "img-src": ["'self'", "data:"],
                 "connect-src": ["'self'", "https://cdnjs.cloudflare.com"]
             }
