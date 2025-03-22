@@ -1,5 +1,7 @@
 (function() {
-    const parentUrl = document.referrer 
+    const parentUrl = window.location !== window.parent.location 
+        ? document.referrer || 'Unknown'
+        : window.location.href;
 
     const formHTML = `
         <div class="form-container">
