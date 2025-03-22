@@ -1,3 +1,4 @@
+const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios'); 
@@ -10,7 +11,11 @@ const geoip = require('geoip-lite');
 
 const app = express();
 const PORT = 3000;
-
+app.use(cors({
+    origin: '*', // Allow requests from any origin
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
 // Nonce Middleware
 app.use((req, res, next) => {
     res.locals.nonce = crypto.randomBytes(16).toString('base64');
@@ -105,9 +110,9 @@ const RECAPTCHA_SECRET_KEY = '6Ld5fOIoAAAAAM0jPt6YL5oH8KQi7yaOKtLa1gvX';
 
 
 // Serve Embed Script
-app.get('/embed.js', (req, res) => {
+app.get(['/', '/embed.js'], (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
-    res.sendFile(__dirname + '/embed.js');
+    res.sendFile(__dirname + '/embed.js');  // Make sure embed.js path sahi ho
 });
 
 app.post('/submit', async (req, res) => {
