@@ -11,6 +11,10 @@ const geoip = require('geoip-lite');
 
 const app = express();
 const PORT = 3000;
+
+app.use(express.static(__dirname));
+
+
 app.use(cors({
     origin: '*', // Allow requests from any origin
     methods: ['GET', 'POST'],
@@ -109,10 +113,10 @@ db.getConnection((err, connection) => {
 const RECAPTCHA_SECRET_KEY = '6Ld5fOIoAAAAAM0jPt6YL5oH8KQi7yaOKtLa1gvX';
 
 
-// Serve Embed Script
-app.get(['/', '/embed.js'], (req, res) => {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.sendFile(__dirname + '/embed.js');  // Make sure embed.js path sahi ho
+// Correct Route for /embed.js
+app.get('/embed.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript'); // ✅ Correct Content-Type
+    res.sendFile(__dirname + '/embed.js');                    // ✅ Correct File Path
 });
 
 app.post('/submit', async (req, res) => {
