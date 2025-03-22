@@ -103,8 +103,11 @@ db.getConnection((err, connection) => {
 
 const RECAPTCHA_SECRET_KEY = '6Ld5fOIoAAAAAM0jPt6YL5oH8KQi7yaOKtLa1gvX';
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+
+// Serve Embed Script
+app.get('/embed.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(__dirname + '/embed.js');
 });
 
 app.post('/submit', async (req, res) => {
