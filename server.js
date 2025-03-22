@@ -79,7 +79,7 @@ const transporter = nodemailer.createTransport({
 // Rate Limiting
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 5,
+    max: 100, // Ab 100 requests allow hongi
     message: "Too many requests, please try again later."
 });
 app.use(limiter);
