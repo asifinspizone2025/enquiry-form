@@ -52,15 +52,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.set('trust proxy', true); // Trusted proxies support
 
-// IP Extraction Function
 function getClientIp(req) {
-    const forwardedIps = req.headers['x-forwarded-for'];
-    if (forwardedIps) {
-        return forwardedIps.split(',')[0].trim(); // Client ka real IP
-    }
-    return req.connection.remoteAddress.includes(':')
-        ? req.connection.remoteAddress.split(':').pop()
-        : req.connection.remoteAddress;
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    return ip.includes(':') ? ip.split(':').pop() : ip;
 }
 
 const transporter = nodemailer.createTransport({
@@ -105,19 +99,31 @@ app.get('/', (req, res) => {
 });
 
 app.post('/submit', async (req, res) => {
-    const { name, email, mobile, course, message, 'g-recaptcha-response': recaptchaToken } = req.body;
+    const { name, email, mobile, course, message,parent_url, 'g-recaptcha-response': recaptchaToken } = req.body;
 
-    if (!name || !email || !mobile || !course || !message) {
+    if (!name || !email || !mobile || !course || !message || !parent_url) {
         return res.status(400).send('All fields are required.');
     }
+    
+    // const userIp = getClientIp(req);
+    // const geo = geoip.lookup(userIp) || { city: 'Unknown', country: 'Unknown' };
+    // const location = `${geo.city}, ${geo.country}`;
+    // const referenceUrl = parent_url || req.headers.referer || 'Direct Access';
+    const userIp = getClientIp(req);
 
-        const userIp = getClientIp(req);
-    const geo = geoip.lookup(userIp);
-    const location = geo
-        ? `${geo.city || 'Unknown'}, ${geo.country || 'Unknown'}`
-        : 'Unknown Location';
+    try {
+        // VPN & Proxy Detection
+        const vpnCheckResponse = await axios.get(`https://ipapi.co/${userIp}/json/`);
+        const securityData = vpnCheckResponse.data.security || {};
 
-    const referenceUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+        if (securityData.vpn || securityData.proxy || securityData.tor) {
+            return res.status(403).send('Form Not Found'); // Block suspicious users
+        }
+
+        // Location & Full Path Tracking
+        const location = `${vpnCheckResponse.data.city}, ${vpnCheckResponse.data.country}`;
+        const referenceUrl = parent_url || req.headers.referer || 'Direct Access';
+    
 
     try {
         const recaptchaResponse = await axios.post(
@@ -160,11 +166,17 @@ app.post('/submit', async (req, res) => {
                 }
             });
 
-            res.send(`Thank you, ${name}! Your form was submitted successfully.`);
+            // res.send(`Thank you, ${name}! Your form was submitted successfully.`);
+            res.redirect('https://www.inspizone.com/thank-you/');
         });
     } catch (error) {
         res.status(500).send('Error verifying captcha. Please try again.');
     }
+    } catch (error) {
+        console.error('Error during VPN/Proxy check:', error);
+        res.status(500).send('Error verifying submission. Please try again.');
+    }
+   
 });
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
