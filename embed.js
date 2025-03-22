@@ -2,7 +2,7 @@
     const formHTML = `
         <div class="form-container">
             <h2>Send Enquiry Now</h2>
-            <form method="POST" action="https://your-node-server.com/submit">
+            <form method="POST" action="/submit">
                 <input type="hidden" name="parent_url" value="${window.location.href}">
                 <input type="text" name="name" required placeholder="Name*">
                 <input type="email" name="email" required placeholder="Email">
