@@ -1,5 +1,5 @@
 (function() {
-    const parentUrl = document.referrer || window.location.href;  // Safe URL capture
+    const parentUrl = document.referrer 
 
     const formHTML = `
         <div class="form-container">
