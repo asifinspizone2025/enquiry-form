@@ -9,6 +9,34 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <script>
+        async function checkVPNAndBots() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+
+                if (data.security && data.security.vpn === true) {
+                    document.getElementById('form-container').innerHTML = "<h2>Form Not Found</h2>";
+                }
+
+                const mouseDetected = new Promise((resolve) => {
+                    let moved = false;
+                    document.addEventListener('mousemove', () => moved = true, { once: true });
+                    setTimeout(() => resolve(moved), 3000); // 3 sec delay
+                });
+
+                const isHuman = await mouseDetected;
+
+                if (!isHuman) {
+                    document.getElementById('form-container').innerHTML = "<h2>Form Not Found</h2>";
+                }
+            } catch (error) {
+                console.error('Error checking VPN/Bot:', error);
+            }
+        }
+
+        window.onload = checkVPNAndBots;
+    </script>
     <style>
         body {
             display: flex;
@@ -67,7 +95,7 @@
 <body>
     <div class="form-container">
         <h2>Send Enquiry Now</h2>
-        <form method="POST" action="/submit">
+        <form method="POST" action="/submit" id="enquiryForm">
             <input type="text" id="name" name="name" required placeholder="Name*">
             <input type="email" id="email" name="email" required placeholder="Emails">
             <input type="tel" id="mobile" name="mobile" required placeholder="Mobile">
@@ -80,6 +108,9 @@
             </select>
 
             <textarea id="message" name="message" rows="4" required placeholder="Write message here..."></textarea>
+
+            <!-- Hidden Parent URL Field -->
+            <input type="hidden" id="parent_url" name="parent_url">
 
             <div class="g-recaptcha" data-sitekey="6Ld5fOIoAAAAAB2iweCfZmfPB2Q3UuWHDmfT4rni"></div>
 
@@ -98,6 +129,15 @@
                     .catch(() => callback("us"));
             },
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.min.js"
+        });
+
+        // Capture Parent URL and Set in Hidden Input Field
+        document.addEventListener('DOMContentLoaded', function () {
+            const parentUrl = window.location !== window.parent.location
+                ? document.referrer  // Parent URL detection
+                : window.location.href;
+
+            document.getElementById('parent_url').value = parentUrl;
         });
     </script>
 </body>
