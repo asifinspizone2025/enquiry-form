@@ -192,13 +192,7 @@ app.post('/submit', async (req, res) => {
             });
 
             // res.send(`Thank you, ${name}! Your form was submitted successfully.`);
-            // res.redirect('https://www.inspizone.com/thank-you/');
-            res.send(`
-                        <script>
-                            window.open('https://www.inspizone.com/thank-you/', '_blank');
-                        </script>
-                    `);
-
+            res.redirect('https://www.inspizone.com/thank-you/');
         });
     } catch (error) {
         res.status(500).send('Error verifying captcha. Please try again.');
