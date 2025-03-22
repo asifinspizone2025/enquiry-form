@@ -53,9 +53,13 @@ app.use(express.static(__dirname + '/public'));
 app.set('trust proxy', true); // Trusted proxies support
 
 function getClientIp(req) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    return ip.includes(':') ? ip.split(':').pop() : ip;
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+        return forwarded.split(',')[0].trim();  // Sabse pehla IP original client ka hota hai
+    }
+    return req.connection.remoteAddress;
 }
+
 
 const transporter = nodemailer.createTransport({
     host: 'da400.is.cc', // Change this to your SMTP server
@@ -75,21 +79,26 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Database Configuration
-const db = mysql.createConnection({
+// Database Configuration with Pool
+const db = mysql.createPool({
     host: '46.202.137.220',
     user: 'u212758487_leadsinpizone',
     password: '6]76>!b/lGw',
     database: 'u212758487_leadsinpizone',
+    waitForConnections: true,
+    connectionLimit: 10, // Maximum 10 connections at a time
+    queueLimit: 0
 });
 
 
-db.connect((err) => {
+// Database connection check
+db.getConnection((err, connection) => {
     if (err) {
         console.error('Database connection failed:', err);
         return;
     }
     console.log('Connected to MySQL Database!');
+    connection.release(); // Release the connection back to the pool
 });
 
 const RECAPTCHA_SECRET_KEY = '6Ld5fOIoAAAAAM0jPt6YL5oH8KQi7yaOKtLa1gvX';
@@ -112,17 +121,16 @@ app.post('/submit', async (req, res) => {
     const userIp = getClientIp(req);
 
     try {
-        // VPN & Proxy Detection
         const vpnCheckResponse = await axios.get(`https://ipapi.co/${userIp}/json/`);
         const securityData = vpnCheckResponse.data.security || {};
 
         if (securityData.vpn || securityData.proxy || securityData.tor) {
-            return res.status(403).send('Form Not Found'); // Block suspicious users
+            return res.status(403).send('Form Not Found');
         }
 
-        // Location & Full Path Tracking
         const location = `${vpnCheckResponse.data.city}, ${vpnCheckResponse.data.country}`;
         const referenceUrl = parent_url || req.headers.referer || 'Direct Access';
+        
     
 
     try {
