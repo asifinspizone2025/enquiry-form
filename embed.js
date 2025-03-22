@@ -20,7 +20,7 @@
                 </select>
                 <textarea name="message" rows="4" required placeholder="Message"></textarea>
                 <div class="g-recaptcha" data-sitekey="6Ld5fOIoAAAAAB2iweCfZmfPB2Q3UuWHDmfT4rni"></div>
-                <button type="submit">Submit</button>
+                <button type="submit" class="node-form-button">Submit</button>
             </form>
         </div>
     `;
