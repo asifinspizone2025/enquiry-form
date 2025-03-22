@@ -14,6 +14,8 @@ const PORT = 3000;
 
 app.use(express.static(__dirname));
 
+// Trust only known proxy servers like Cloudflare, AWS, etc.
+app.set('trust proxy', 'loopback, linklocal, uniquelocal');  
 
 app.use(cors({
     origin: '*', // Allow requests from any origin
@@ -82,11 +84,14 @@ const transporter = nodemailer.createTransport({
 
 // Rate Limiting
 const limiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 100, // Ab 100 requests allow hongi
-    message: "Too many requests, please try again later."
+    windowMs: 1 * 60 * 1000,  // 1 minute
+    max: 100,                 // 100 requests per minute
+    standardHeaders: true,    // Return rate limit info in headers
+    legacyHeaders: false,     // Disable the `X-RateLimit-*` headers
+    keyGenerator: (req) => req.ip // Client IP based key generator
 });
 app.use(limiter);
+
 
 // Database Configuration with Pool
 const db = mysql.createPool({
