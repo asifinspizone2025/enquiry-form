@@ -24,40 +24,101 @@
     function isSuspiciousUser() {
         // User Agent checks
         const ua = navigator.userAgent.toLowerCase();
+        console.log("User Agent:", ua);
         const isBot = /bot|crawl|spider|headless|selenium|scrapy/i.test(ua);
+        console.log("Is Bot:", isBot);
         const isAutomationTool = /phantomjs|puppeteer|playwright/i.test(ua);
+        console.log("Is Automation Tool:", isAutomationTool);
 
         // WebRTC leak check for VPN
         const hasWebRTCLeak = () => {
             return new Promise(resolve => {
-                const rtc = new RTCPeerConnection();
+                const rtc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
                 rtc.createDataChannel('');
                 rtc.createOffer()
                     .then(offer => rtc.setLocalDescription(offer))
                     .then(() => {
-                        const leakDetected = /192\.168|10\.0|172\.(1[6-9]|2[0-9]|3[0-1])/.test(rtc.localDescription.sdp);
+                        const sdp = rtc.localDescription.sdp;
+                        console.log("WebRTC SDP:", sdp);
+                        const leakDetected = /192\.168|10\.0|172\.(1[6-9]|2[0-9]|3[0-1])/.test(sdp);
+                        console.log("WebRTC Leak Detected:", leakDetected);
                         resolve(leakDetected);
                         rtc.close();
+                    })
+                    .catch(err => {
+                        console.log("WebRTC Error:", err);
+                        resolve(false);
+                    });
+            });
+        };
+
+        // IP-based VPN check with timezone mismatch
+        const checkIPMismatch = () => {
+            return fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("IP API Response:", data);
+                    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    console.log("User Timezone:", userTimezone);
+                    const ipTimezone = data.timezone;
+                    console.log("IP Timezone:", ipTimezone);
+                    const isVpnLikely = userTimezone !== ipTimezone || data.vpn || data.proxy || data.tor;
+                    console.log("VPN/Proxy/Tor Detected (IP API):", isVpnLikely);
+                    return isVpnLikely;
+                })
+                .catch(err => {
+                    console.log("IP API Error:", err);
+                    return false;
+                });
+        };
+
+        // Latency check (VPNs often increase latency)
+        const checkLatency = () => {
+            return new Promise(resolve => {
+                const start = performance.now();
+                fetch('https://www.google.com', { mode: 'no-cors' })
+                    .then(() => {
+                        const latency = performance.now() - start;
+                        console.log("Latency to Google (ms):", latency);
+                        resolve(latency > 200); // Agar 200ms se zyada hai to VPN suspect
                     })
                     .catch(() => resolve(false));
             });
         };
 
-        // Proxy/VPN detection via timing and navigator properties
-        const isProxied = navigator.connection && (navigator.connection.rtt === 0 || navigator.connection.type === 'vpn');
-        const hasSuspiciousPlugins = navigator.plugins.length === 0 && navigator.mimeTypes.length === 0;
-
-        // Behavioral checks
-        const isHeadless = !navigator.webdriver && window.outerWidth === 0 && window.outerHeight === 0;
+        // DNS leak check
+        const checkDNSLeak = () => {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.src = 'https://dnsleaktest.com/test.png?' + Math.random();
+                img.onload = () => {
+                    console.log("DNS Leak Test Image Loaded");
+                    resolve(true); // Agar external DNS server se load hua to VPN suspect
+                };
+                img.onerror = () => {
+                    console.log("DNS Leak Test Failed");
+                    resolve(false);
+                };
+            });
+        };
 
         // Combine all checks
         return new Promise(resolve => {
-            hasWebRTCLeak().then(leak => {
-                const suspicious = isBot || isAutomationTool || leak || isProxied || hasSuspiciousPlugins || isHeadless;
-                console.log("Detection Results:", {
-                    isBot, isAutomationTool, WebRTCLeak: leak, isProxied, hasSuspiciousPlugins, isHeadless
+            Promise.all([
+                hasWebRTCLeak(),
+                checkIPMismatch(),
+                checkLatency(),
+                checkDNSLeak()
+            ]).then(([webRTCLeak, ipMismatch, highLatency, dnsLeak]) => {
+                const suspicious = isBot || isAutomationTool || webRTCLeak || ipMismatch || highLatency || dnsLeak;
+                console.log("All Checks:", {
+                    isBot, isAutomationTool, webRTCLeak, ipMismatch, highLatency, dnsLeak
                 });
+                console.log("Final Suspicious Result:", suspicious);
                 resolve(suspicious);
+            }).catch(err => {
+                console.log("Detection Error:", err);
+                resolve(false);
             });
         });
     }
