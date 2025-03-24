@@ -22,7 +22,7 @@
 
     // VPN/Bot/Automation detection function
     function isSuspiciousUser() {
-        // User Agent checks
+        // User Agent checks for bots and automation tools
         const ua = navigator.userAgent.toLowerCase();
         console.log("User Agent:", ua);
         const isBot = /bot|crawl|spider|headless|selenium|scrapy/i.test(ua);
@@ -52,17 +52,13 @@
             });
         };
 
-        // IP-based VPN check with timezone mismatch
+        // IP-based VPN check with explicit VPN/Proxy/Tor detection
         const checkIPMismatch = () => {
             return fetch('https://ipapi.co/json/')
                 .then(response => response.json())
                 .then(data => {
                     console.log("IP API Response:", data);
-                    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                    console.log("User Timezone:", userTimezone);
-                    const ipTimezone = data.timezone;
-                    console.log("IP Timezone:", ipTimezone);
-                    const isVpnLikely = userTimezone !== ipTimezone || data.vpn || data.proxy || data.tor;
+                    const isVpnLikely = data.vpn || data.proxy || data.tor;
                     console.log("VPN/Proxy/Tor Detected (IP API):", isVpnLikely);
                     return isVpnLikely;
                 })
@@ -72,47 +68,15 @@
                 });
         };
 
-        // Latency check (VPNs often increase latency)
-        const checkLatency = () => {
-            return new Promise(resolve => {
-                const start = performance.now();
-                fetch('https://www.google.com', { mode: 'no-cors' })
-                    .then(() => {
-                        const latency = performance.now() - start;
-                        console.log("Latency to Google (ms):", latency);
-                        resolve(latency > 200); // Agar 200ms se zyada hai to VPN suspect
-                    })
-                    .catch(() => resolve(false));
-            });
-        };
-
-        // DNS leak check
-        const checkDNSLeak = () => {
-            return new Promise(resolve => {
-                const img = new Image();
-                img.src = 'https://dnsleaktest.com/test.png?' + Math.random();
-                img.onload = () => {
-                    console.log("DNS Leak Test Image Loaded");
-                    resolve(true); // Agar external DNS server se load hua to VPN suspect
-                };
-                img.onerror = () => {
-                    console.log("DNS Leak Test Failed");
-                    resolve(false);
-                };
-            });
-        };
-
-        // Combine all checks
+        // Combine only solid checks
         return new Promise(resolve => {
             Promise.all([
                 hasWebRTCLeak(),
-                checkIPMismatch(),
-                checkLatency(),
-                checkDNSLeak()
-            ]).then(([webRTCLeak, ipMismatch, highLatency, dnsLeak]) => {
-                const suspicious = isBot || isAutomationTool || webRTCLeak || ipMismatch || highLatency || dnsLeak;
+                checkIPMismatch()
+            ]).then(([webRTCLeak, ipMismatch]) => {
+                const suspicious = isBot || isAutomationTool || webRTCLeak || ipMismatch;
                 console.log("All Checks:", {
-                    isBot, isAutomationTool, webRTCLeak, ipMismatch, highLatency, dnsLeak
+                    isBot, isAutomationTool, webRTCLeak, ipMismatch
                 });
                 console.log("Final Suspicious Result:", suspicious);
                 resolve(suspicious);
@@ -147,6 +111,7 @@
         }
 
         // Agar suspicious nahi hai to form load karo
+        console.log("Koi suspicious activity nahi, form dikha raha hu");
         loadForm();
     });
 
@@ -224,7 +189,7 @@
                             <option value="email_marketing">Email Marketing</option>
                             <option value="facebook_marketing">Facebook Marketing</option>
                             <option value="wordpress_design">WordPress Website Design</option>
-                            <option value="artificial_intelligence">Artificial Intelligence</option>
+                            <option leden value="artificial_intelligence">Artificial Intelligence</option>
                             <option value="aws_training">AWS Training</option>
                             <option value="azure_ml">Azure Machine Learning Course</option>
                             <option value="big_data">Big Data</option>
