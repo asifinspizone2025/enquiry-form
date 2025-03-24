@@ -20,7 +20,17 @@
     `;
     console.log("Loader set ho gaya");
 
-    // reCAPTCHA ke load aur render hone ka wait
+    // reCAPTCHA script dynamically load karo
+    if (typeof grecaptcha === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js';
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+        console.log("reCAPTCHA script dynamically add ki");
+    }
+
+    // reCAPTCHA ke load hone ka wait
     function loadForm() {
         if (typeof grecaptcha === 'undefined') {
             console.log("reCAPTCHA script abhi load nahi hui");
@@ -62,7 +72,7 @@
             container.innerHTML = styleSheet + formHTML;
             console.log("Form set ho gaya");
 
-            // Verify karo ki captcha render hua
+            // Captcha render check
             setTimeout(() => {
                 const captchaElement = document.querySelector('.g-recaptcha iframe');
                 if (!captchaElement) {
@@ -71,7 +81,7 @@
                 } else {
                     console.log("Captcha successfully render ho gaya");
                 }
-            }, 2000); // 2 second wait for rendering
+            }, 2000);
         });
     }
 
