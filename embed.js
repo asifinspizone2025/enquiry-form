@@ -71,7 +71,7 @@
                     <option value="rpa">Robotics Process Automation</option>
                 </select>
                 <textarea name="message" rows="4" required placeholder="Message"></textarea>
-                <div class="g-recaptcha" data-sitekey="6Ld5fOIoAAAAAB2iweCfZmfPB2Q3UuWHDmfT4rni"></div>
+                <div class="g-recaptcha" data-sitekey="6LdpZOsqAAAAAPgfo-01sSqp_TDwXAXzeBTUc0BO"></div>
                 <button type="submit" class="node-form-button">Submit</button>
             </form>
         </div>
