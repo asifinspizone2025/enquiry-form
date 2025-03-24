@@ -138,8 +138,7 @@
         </style>
     `;
 
-    const container = document.createElement('div');
-    container.id = 'enquiry-form-container';
-    container.innerHTML = styleSheet + formHTML;
-    document.body.appendChild(container);
+    const container = document.getElementById('node-form');
+container.innerHTML = styleSheet + formHTML;
+
 })();
