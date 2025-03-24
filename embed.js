@@ -26,11 +26,18 @@
         script.src = 'https://www.google.com/recaptcha/api.js';
         script.async = true;
         script.defer = true;
+        script.onload = loadForm;
+        script.onerror = function() {
+            console.log("reCAPTCHA script load fail hui");
+            container.innerHTML = "<p>Form Not Found</p>";
+        };
         document.head.appendChild(script);
         console.log("reCAPTCHA script dynamically add ki");
+    } else {
+        loadForm();
     }
 
-    // reCAPTCHA ke load hone ka wait
+    // Form load karne ka function
     function loadForm() {
         if (typeof grecaptcha === 'undefined') {
             console.log("reCAPTCHA script abhi load nahi hui");
@@ -125,37 +132,25 @@
                     .node-form-container { background: #ffffff; border: 4px solid #007bff; border-radius: 20px; max-width: 400px; padding: 15px; }
                     .g-recaptcha { margin-top: 10px; display: block !important; }
                     .node-form-button { background: #007bff; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; }
-					label {
-                display: block;
-                margin-top: 10px;
-                font-weight: 600;
-            }
-            input, textarea, select {
-                width: 100%;
-                padding: 10px;
-                margin-top: 5px;
-                border: 2px solid #ced4da;
-                border-radius: 8px;
-                box-sizing: border-box;
-            }
+                    label { display: block; margin-top: 10px; font-weight: 600; }
+                    input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid #ced4da; border-radius: 8px; box-sizing: border-box; }
                 </style>
             `;
 
             container.innerHTML = styleSheet + formHTML;
             console.log("Form set ho gaya");
 
-            // Captcha render check
+            // VPN/Bot detection check
             setTimeout(() => {
-                const captchaElement = document.querySelector('.g-recaptcha iframe');
-                if (!captchaElement) {
-                    console.log("Captcha render nahi hua");
-                    container.innerHTML += `<p style="color: red;">Captcha load nahi hua, page refresh karo.</p>`;
+                const captchaElement = document.querySelector('.g-recaptcha');
+                // Agar captcha nahi dikhta ya display none hai, to form hide karo
+                if (!captchaElement || window.getComputedStyle(captchaElement).display === 'none') {
+                    console.log("VPN ya bot detect hua, form hide kar raha hu");
+                    container.innerHTML = "<p>Form Not Found</p>";
                 } else {
-                    console.log("Captcha successfully render ho gaya");
+                    console.log("Captcha dikhta hai, form visible rahega");
                 }
             }, 2000);
         });
     }
-
-    loadForm();
 })();
