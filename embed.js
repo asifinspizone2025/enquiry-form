@@ -12,6 +12,7 @@
                 <input type="email" name="email" required placeholder="Email">
                 <input type="tel" name="mobile" required placeholder="Mobile">
                 <select name="course" required>
+                    <option value="">--Select COurse--</option>
                     <option value="accounting_non_finance">Accounting For Non-Finance Professionals</option>
                     <option value="bookkeeping_fundamentals">Bookkeeping Fundamentals</option>
                     <option value="corporate_tax">Corporate Tax Training</option>
@@ -133,7 +134,7 @@
         </style>
     `;
 
-    const container = document.getElementById('node-form');
+    const container = document.getElementById('node-form-container');
 container.innerHTML = styleSheet + formHTML;
 
 })();
