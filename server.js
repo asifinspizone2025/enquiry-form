@@ -115,7 +115,7 @@ db.getConnection((err, connection) => {
     connection.release(); // Release the connection back to the pool
 });
 
-const RECAPTCHA_SECRET_KEY = '6Ld5fOIoAAAAAM0jPt6YL5oH8KQi7yaOKtLa1gvX';
+const RECAPTCHA_SECRET_KEY = '6LdpZOsqAAAAAFHSIlnDwr8KCaej_WZql_pQz01n';
 
 
 // Correct Route for /embed.js
