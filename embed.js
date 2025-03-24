@@ -4,7 +4,7 @@
         : window.location.href;
 
     const formHTML = `
-        <div class="form-container">
+        <div class="node-form-container">
             <h2>Send Enquiry Now</h2>
             <form method="POST" action="https://enquiry-form-koaw.onrender.com/submit">
                 <input type="hidden" name="parent_url" value="${parentUrl}">
@@ -78,7 +78,7 @@
 
     const styleSheet = `
         <style>
-            #enquiry-form-container {
+            #node-form-container {
                 border: 2px solid #4CAF50;
                 padding: 15px;
                 border-radius: 8px;
@@ -86,13 +86,8 @@
                 min-height: 200px;
                 position: relative;
             }
-            form {
-                display: none;
-            }
-            #enquiry-form-container form {
-                display: block;
-            }
-            .form-container {
+           
+            .node-form-container {
                 background: #ffffff;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
                 border: 4px solid #007bff;
@@ -118,7 +113,7 @@
                 border-radius: 8px;
                 box-sizing: border-box;
             }
-            button {
+            node-form-button {
                 background-color: #007bff;
                 color: white;
                 border: none;
@@ -129,7 +124,7 @@
                 cursor: pointer;
                 transition: background 0.3s ease;
             }
-            button:hover {
+            node-form-button:hover {
                 background-color: #0056b3;
             }
             .g-recaptcha {
