@@ -69,7 +69,6 @@
                     <option value="data_science">Data Science</option>
                     <option value="rpa">Robotics Process Automation</option>
                 </select>
-
                 <textarea name="message" rows="4" required placeholder="Message"></textarea>
                 <div class="g-recaptcha" data-sitekey="6Ld5fOIoAAAAAB2iweCfZmfPB2Q3UuWHDmfT4rni"></div>
                 <button type="submit" class="node-form-button">Submit</button>
@@ -77,7 +76,70 @@
         </div>
     `;
 
+    const styleSheet = `
+        <style>
+            #enquiry-form-container {
+                border: 2px solid #4CAF50;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                min-height: 200px;
+                position: relative;
+            }
+            form {
+                display: none;
+            }
+            #enquiry-form-container form {
+                display: block;
+            }
+            .form-container {
+                background: #ffffff;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                border: 4px solid #007bff;
+                border-radius: 20px;
+                width: 100%;
+                max-width: 400px;
+                box-sizing: border-box;
+            }
+            h2 {
+                text-align: center;
+                color: #2d3e50;
+            }
+            label {
+                display: block;
+                margin-top: 10px;
+                font-weight: 600;
+            }
+            input, textarea, select {
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 2px solid #ced4da;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 20px;
+                width: 100%;
+                margin-top: 15px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+            button:hover {
+                background-color: #0056b3;
+            }
+            .g-recaptcha {
+                margin-top: 10px;
+            }
+        </style>
+    `;
+
     const container = document.createElement('div');
-    container.innerHTML = formHTML;
+    container.id = 'enquiry-form-container';
+    container.innerHTML = styleSheet + formHTML;
     document.body.appendChild(container);
 })();
