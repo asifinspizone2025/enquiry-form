@@ -22,7 +22,6 @@
 
     // VPN/Bot/Automation detection function
     function isSuspiciousUser() {
-        // User Agent checks for bots and automation tools
         const ua = navigator.userAgent.toLowerCase();
         console.log("User Agent:", ua);
         const isBot = /bot|crawl|spider|headless|selenium|scrapy/i.test(ua);
@@ -30,7 +29,6 @@
         const isAutomationTool = /phantomjs|puppeteer|playwright/i.test(ua);
         console.log("Is Automation Tool:", isAutomationTool);
 
-        // WebRTC leak check for VPN
         const hasWebRTCLeak = () => {
             return new Promise(resolve => {
                 const rtc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
@@ -52,7 +50,6 @@
             });
         };
 
-        // IP-based VPN check with explicit VPN/Proxy/Tor detection
         const checkIPMismatch = () => {
             return fetch('https://ipapi.co/json/')
                 .then(response => response.json())
@@ -68,16 +65,13 @@
                 });
         };
 
-        // Combine only solid checks
         return new Promise(resolve => {
             Promise.all([
                 hasWebRTCLeak(),
                 checkIPMismatch()
             ]).then(([webRTCLeak, ipMismatch]) => {
                 const suspicious = isBot || isAutomationTool || webRTCLeak || ipMismatch;
-                console.log("All Checks:", {
-                    isBot, isAutomationTool, webRTCLeak, ipMismatch
-                });
+                console.log("All Checks:", { isBot, isAutomationTool, webRTCLeak, ipMismatch });
                 console.log("Final Suspicious Result:", suspicious);
                 resolve(suspicious);
             }).catch(err => {
@@ -110,7 +104,6 @@
             return;
         }
 
-        // Agar suspicious nahi hai to form load karo
         console.log("Koi suspicious activity nahi, form dikha raha hu");
         loadForm();
     });
@@ -189,7 +182,7 @@
                             <option value="email_marketing">Email Marketing</option>
                             <option value="facebook_marketing">Facebook Marketing</option>
                             <option value="wordpress_design">WordPress Website Design</option>
-                            <option leden value="artificial_intelligence">Artificial Intelligence</option>
+                            <option value="artificial_intelligence">Artificial Intelligence</option>
                             <option value="aws_training">AWS Training</option>
                             <option value="azure_ml">Azure Machine Learning Course</option>
                             <option value="big_data">Big Data</option>
@@ -214,6 +207,7 @@
                 </style>
             `;
 
+            // Form ko set karo
             container.innerHTML = styleSheet + formHTML;
             console.log("Form set ho gaya");
 
@@ -221,8 +215,13 @@
             setTimeout(() => {
                 const captchaElement = document.querySelector('.g-recaptcha iframe');
                 if (!captchaElement) {
-                    console.log("Captcha render nahi hua");
-                    container.innerHTML += `<p style="color: red;">Captcha load nahi hua, page refresh karo.</p>`;
+                    console.log("Captcha render nahi hua, form hide kar raha hu");
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #dc3545;">
+                            <h3>Form Not Found</h3>
+                            <p>Captcha could not load. Please refresh the page or check your connection.</p>
+                        </div>
+                    `;
                 } else {
                     console.log("Captcha successfully render ho gaya");
                 }
