@@ -87,6 +87,7 @@
                 min-height: 200px;
                 position: relative;
             }
+           
             .node-form-container {
                 background: #ffffff;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -96,12 +97,45 @@
                 max-width: 400px;
                 box-sizing: border-box;
             }
-            h2 { text-align: center; color: #2d3e50; }
-            .g-recaptcha { margin-top: 10px; }
+            h2 {
+                text-align: center;
+                color: #2d3e50;
+            }
+            label {
+                display: block;
+                margin-top: 10px;
+                font-weight: 600;
+            }
+            input, textarea, select {
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 2px solid #ced4da;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            node-form-button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 20px;
+                width: 100%;
+                margin-top: 15px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+            node-form-button:hover {
+                background-color: #0056b3;
+            }
+            .g-recaptcha {
+                margin-top: 10px;
+            }
         </style>
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     `;
 
     const container = document.getElementById('node-form');
-    container.innerHTML = styleSheet + formHTML;
+container.innerHTML = styleSheet + formHTML;
+
 })();
