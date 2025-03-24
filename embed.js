@@ -1,4 +1,9 @@
 (function() {
+    function loadForm() {
+        if (typeof grecaptcha === 'undefined') {
+            setTimeout(loadForm, 100);
+            return;
+        }
     const parentUrl = window.location !== window.parent.location 
         ? document.referrer || 'Unknown'
         : window.location.href;
@@ -128,14 +133,16 @@
             node-form-button:hover {
                 background-color: #0056b3;
             }
-            .g-recaptcha {
-                margin-top: 10px;
-            }
+           
+            .g-recaptcha { margin-top: 10px; display: block !important; }
+            
         </style>
          
     `;
 
     const container = document.getElementById('node-form');
 container.innerHTML = styleSheet + formHTML;
+}
 
+    loadForm();
 })();
