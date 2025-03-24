@@ -134,7 +134,7 @@
         </style>
     `;
 
-    const container = document.getElementById('node-form-container');
+    const container = document.getElementById('node-form');
 container.innerHTML = styleSheet + formHTML;
 
 })();
